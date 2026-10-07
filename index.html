@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>한칸 쌓기</title><link rel="stylesheet" href="style.css"></head><body>
+
+<div id="safeProbe"></div>
+
+<main id="stage" data-state="title">
+  <canvas id="cv" aria-label="게임 화면. 탭하면 칸이 떨어져요."></canvas>
+
+  <div class="corner">
+    <button id="musicBtn" class="icon" aria-pressed="false" aria-label="배경음악 끄기">
+      <svg class="on" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+      <svg class="off" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/><path d="M3 3l18 18"/></svg>
+    </button>
+    <button id="soundBtn" class="icon" aria-pressed="false" aria-label="소리 끄기">
+      <svg class="on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      <svg class="off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+    </button>
+    <button id="pauseBtn" class="icon" aria-label="일시정지" hidden>
+      <svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+    </button>
+  </div>
+
+  <div id="banner" aria-live="polite"></div>
+
+  <section id="title" class="sheet" aria-label="시작">
+    <div class="brand">
+      <h1>한칸<br><span>쌓기</span></h1>
+      <div class="best"><span id="bestLabel">보통 최고</span><b id="bestT">0</b></div>
+    </div>
+    <div class="seg" id="levelPick" role="group" aria-label="난이도">
+      <button data-level="easy" aria-pressed="false">쉬움</button>
+      <button data-level="normal" aria-pressed="true">보통</button>
+      <button data-level="hard" aria-pressed="false">어려움</button>
+      <button data-level="extreme" aria-pressed="false">익스트림</button>
+    </div>
+    <p class="howto">흔들리는 칸을 <b>탭해서 떨어뜨려</b> 1분 30초 동안 높이 쌓아요. <button id="tutBtn" class="link">게임 방법 보기</button></p>
+    <div class="row wide">
+      <button id="hofBtn" class="ghost">명예의 전당</button>
+      <button id="startBtn" class="primary">시작하기</button>
+    </div>
+  </section>
+
+  <section id="result" class="sheet" aria-label="결과" hidden>
+    <div class="result-top">
+      <div>
+        <p class="reason" id="rReason">시간 끝</p>
+        <div class="score" id="rScore">0</div>
+      </div>
+      <div class="newrec" id="rNew" hidden>새 기록!</div>
+    </div>
+    <p class="bestline"><span id="rBestLabel">보통 최고</span> <b id="rBest">0</b></p>
+    <dl class="stats">
+      <div><dt>층수</dt><dd id="rFloors">0층</dd></div>
+      <div><dt>완벽</dt><dd id="rPerf">0번</dd></div>
+      <div><dt>아슬아슬</dt><dd id="rEdge">0번</dd></div>
+      <div><dt>최고 연속</dt><dd id="rStreak">–</dd></div>
+    </dl>
+    <button id="contBtn" class="ad">광고 보고 이어하기<small id="contSub">+10초 더</small></button>
+    <div class="row">
+      <button id="homeBtn" class="ghost">처음으로</button>
+      <button id="againBtn" class="primary">다시 하기</button>
+    </div>
+  </section>
+
+  <section id="pause" class="cover" aria-label="일시정지" hidden>
+    <h2>잠깐 멈춤</h2>
+    <button id="resumeBtn" class="primary">계속하기</button>
+    <button id="quitBtn" class="ghost">그만하고 처음으로</button>
+  </section>
+
+  <section id="hof" class="cover hof" aria-label="명예의 전당" hidden>
+    <h2>명예의 전당</h2>
+    <div class="seg" id="hofLevel" role="group" aria-label="난이도">
+      <button data-level="easy" aria-pressed="false">쉬움</button>
+      <button data-level="normal" aria-pressed="true">보통</button>
+      <button data-level="hard" aria-pressed="false">어려움</button>
+      <button data-level="extreme" aria-pressed="false">익스트림</button>
+    </div>
+    <ol id="hofList" class="hof-list"></ol>
+    <p class="hof-note">이 폰에 저장된 기록이에요.</p>
+    <button id="hofClose" class="primary">닫기</button>
+  </section>
+
+  <section id="tut" class="cover tut" aria-label="게임 방법" hidden>
+    <h2>게임 방법</h2>
+
+    <div class="tut-page">
+      <svg class="tut-art" viewBox="0 0 200 110" aria-hidden="true">
+        <rect x="0" y="6" width="200" height="4" fill="#7F9DBB"/>
+        <rect x="88" y="3" width="24" height="9" rx="2" fill="#FFD166"/>
+        <path d="M100 12 L122 44" stroke="#DCE6F0" stroke-width="2"/>
+        <g transform="rotate(-18 122 44)"><rect x="100" y="48" width="46" height="16" rx="3" fill="#FF9B54"/></g>
+        <path d="M150 30 q12 8 0 18" stroke="#FFD166" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+        <rect x="74" y="78" width="52" height="16" rx="3" fill="#7BD3A8"/>
+        <rect x="64" y="94" width="72" height="14" rx="3" fill="#35618C"/>
+        <path d="M100 58 v14" stroke="#fff" stroke-width="2.5" stroke-dasharray="3 3"/>
+      </svg>
+      <h3>쌓는 법</h3>
+      <ul>
+        <li>크레인에 매달린 칸이 좌우로 흔들려요. <b>화면을 탭하면</b> 칸이 떨어져요.</li>
+        <li>아래 칸 위에 올라가면 한 층. 칸이 <b>절반 넘게 삐져나오면</b> 모서리에 걸쳐 떨어지고 하트가 하나 줄어요.</li>
+        <li>하트를 다 쓰거나 <b>1분 30초</b>가 지나면 끝나요. 하트는 쉬움 4개, 나머지 3개예요.</li>
+        <li>높이 올라갈수록 크레인이 빨라지고 옆으로도 움직여요.</li>
+        <li>가끔 <b>표정이 있는 칸</b>이 나와요. 잘 올리면 웃고, 아슬아슬하면 식은땀을 흘려요.</li>
+      </ul>
+    </div>
+
+    <div class="tut-page" hidden>
+      <h3>점수</h3>
+      <table class="tut-score">
+        <tr><th>올라감</th><td>10점</td></tr>
+        <tr><th>아슬아슬 <small>모서리에 겨우 걸쳐 버팀</small></th><td>20점</td></tr>
+        <tr><th>완벽 <small>가운데에 딱</small></th><td>30점</td></tr>
+      </table>
+      <ul>
+        <li>완벽·아슬아슬이 <b>이어지면</b> 다음 점수가 <b>×1.5, ×2, ×2.5</b>, 최대 <b>×3</b>까지 커져요.</li>
+        <li>그냥 올라가거나 놓치면 배율이 처음으로 돌아가요.</li>
+        <li>난이도별 상위 5개 기록이 명예의 전당에 남아요.</li>
+      </ul>
+    </div>
+
+    <div class="tut-page" hidden>
+      <h3>방해 요소</h3>
+      <p class="tut-sub">보통 이상에서는 판 중간에 이런 일이 생겨요. 쉬움에는 없어요.</p>
+      <dl class="tut-list">
+        <div><dt><svg viewBox="0 0 40 28" aria-hidden="true"><rect x="12" y="2" width="16" height="7" rx="1.5" fill="#FFD166"/><rect x="9" y="10" width="16" height="7" rx="1.5" fill="#7BD3A8"/><rect x="13" y="19" width="16" height="7" rx="1.5" fill="#6EC1E4"/><path d="M4 6 l-3 4 3 4 M36 6 l3 4 -3 4" stroke="#fff" stroke-width="1.6" fill="none"/></svg>탑 흔들림</dt><dd>쌓인 탑이 덜덜 떨리며 꼭대기 자리가 조금씩 옮겨가요.</dd></div>
+        <div><dt><svg viewBox="0 0 40 28" aria-hidden="true"><rect x="4" y="4" width="32" height="8" rx="1.5" fill="#FF9B54"/><rect x="14" y="16" width="12" height="8" rx="1.5" fill="#FF9B54"/></svg>칸 크기 변형</dt><dd>칸이 좁아지거나 들쭉날쭉해져요. 좁은 칸일수록 맞추기 어려워요.</dd></div>
+        <div><dt><svg viewBox="0 0 40 28" aria-hidden="true"><path d="M8 13 L14 3 H26 L32 13 Z" fill="#B79CED"/><path d="M6 16 H34 V20 H24 V26 H16 V20 H6 Z" fill="#F28DB2"/></svg>칸 모양 변형</dt><dd>사다리꼴, T자, 볼록, 계단, 기울어진 칸이 나와요. 다음 칸은 <b>윗면</b>에 맞춰 올려야 해요. <span class="tut-tag">어려움 이상</span></dd></div>
+        <div><dt><svg viewBox="0 0 40 28" aria-hidden="true"><g fill="#5A3E2B"><ellipse cx="12" cy="10" rx="6" ry="3"/><path d="M10 9 l3 -6 3 6z"/><ellipse cx="28" cy="18" rx="6" ry="3"/><path d="M26 17 l3 -6 3 6z"/></g></svg>참새 떼</dt><dd>참새 무리가 화면 앞을 가로질러 날아가요.</dd></div>
+        <div><dt><svg viewBox="0 0 40 28" aria-hidden="true"><g fill="#F4F7FB"><circle cx="12" cy="16" r="7"/><circle cx="21" cy="12" r="9"/><circle cx="30" cy="17" r="6"/><rect x="8" y="16" width="26" height="7" rx="3"/></g></svg>구름 구간</dt><dd>어느 높이에 오르면 구름이 탑 꼭대기를 가려요. 크레인 움직임만 보고 감으로 쌓아요.</dd></div>
+      </dl>
+    </div>
+
+    <div class="tut-dots" id="tutDots"></div>
+    <div class="row tut-nav">
+      <button id="tutPrev" class="ghost">건너뛰기</button>
+      <button id="tutNext" class="primary">다음</button>
+    </div>
+  </section>
+
+  <section id="adtest" class="cover" aria-label="광고 자리" hidden>
+    <h2>광고 자리</h2>
+    <p>실제 앱에서는 여기서 토스 광고가 나와요.</p>
+    <div id="adCount">3</div>
+  </section>
+</main>
+
+<script src="js/platform.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/music.js"></script>
+<script src="js/game.js"></script>
+
+</body></html>
