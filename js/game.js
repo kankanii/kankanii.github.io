@@ -1312,6 +1312,11 @@
   resize();
   App.toTitle();
   window.HOF = HOF;
+  // 플랫폼(원스토어 등)이 일시정지·뒤로가기를 걸 때 쓰는 연결부
+  window.Game = {
+    pause: function () { App.pause(); Music.stop(); },
+    isPlaying: function () { return App.state === 'play'; }
+  };
   const go = function () { requestAnimationFrame(loop); };
   if (document.fonts && document.fonts.load) {
     Promise.race([document.fonts.load('900 20px HankanDisplay'), new Promise(function (r) { setTimeout(r, 1200); })]).then(go, go);
