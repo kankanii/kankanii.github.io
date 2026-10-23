@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13163a">
+<meta name="description" content="단서를 풀어 딱 한 칸 찾기 · 스튜디오 한칸">
+<title>한칸 찾기</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- 색 기호 -->
+  <symbol id="sym-g" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.2"/></symbol>
+  <symbol id="sym-r" viewBox="0 0 10 10"><path d="M5 .8 9.6 9H.4z"/></symbol>
+  <symbol id="sym-b" viewBox="0 0 10 10"><rect x=".9" y=".9" width="8.2" height="8.2" rx="1.2"/></symbol>
+  <symbol id="sym-y" viewBox="0 0 10 10"><path d="M5 .3 9.7 5 5 9.7.3 5z"/></symbol>
+  <!-- 규칙 아이콘 -->
+  <symbol id="ic-path" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h8v8"/><path d="m13 13 3 3 3-3"/></g><circle cx="8" cy="8" r="2.4" fill="currentColor"/></symbol>
+  <symbol id="ic-dist" viewBox="0 0 24 24"><path d="M12 2.5 21.5 12 12 21.5 2.5 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2.6 2.2"/><path d="M12 7 17 12 12 17 7 12z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 10l4 4m0-4-4 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="ic-lines" viewBox="0 0 24 24"><g fill="currentColor"><rect x="8" y="8" width="6" height="6" rx="1.4"/><rect x="15.5" y="8" width="6" height="6" rx="1.4"/><rect x="8" y="15.5" width="6" height="6" rx="1.4"/><rect x="15.5" y="15.5" width="6" height="6" rx="1.4" opacity=".4"/><circle cx="11" cy="3.6" r="1.8"/><circle cx="18.5" cy="3.6" r="1.8"/><circle cx="3.6" cy="11" r="1.8"/><circle cx="3.6" cy="18.5" r="1.8"/></g></symbol>
+  <symbol id="ic-count" viewBox="0 0 24 24"><g fill="currentColor"><rect x="8.5" y="8.5" width="7" height="7" rx="1.6"/><rect x="9.5" y="1.5" width="5" height="5" rx="1.2" opacity=".55"/><rect x="9.5" y="17.5" width="5" height="5" rx="1.2" opacity=".55"/><rect x="1.5" y="9.5" width="5" height="5" rx="1.2" opacity=".55"/><rect x="17.5" y="9.5" width="5" height="5" rx="1.2" opacity=".55"/></g></symbol>
+  <symbol id="ic-rule" viewBox="0 0 24 24"><g fill="currentColor"><rect x="7" y="1.5" width="10" height="6" rx="1.6" opacity=".55"/><rect x="7" y="9" width="10" height="6" rx="1.6"/><rect x="7" y="16.5" width="10" height="6" rx="1.6" opacity=".55"/></g><path d="m18.5 4 4 4m0-4-4 4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-twin" viewBox="0 0 24 24"><g fill="currentColor"><rect x="1.5" y="2" width="8" height="8" rx="2"/><rect x="1.5" y="14" width="8" height="8" rx="2"/><rect x="14.5" y="8" width="8" height="8" rx="2" opacity=".55"/></g><path d="M5.5 10v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="18.5" cy="12" r="6.6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="ic-lonely" viewBox="0 0 24 24"><g fill="currentColor"><rect x="1.5" y="1.5" width="7" height="7" rx="1.8" opacity=".5"/><rect x="9" y="1.5" width="7" height="7" rx="1.8" opacity=".5"/><rect x="1.5" y="9" width="7" height="7" rx="1.8" opacity=".5"/><rect x="15" y="15" width="7.5" height="7.5" rx="1.8"/></g><path d="M18.7 9.5v2.5M12.5 18.7h-2.5M15 12.7l-1.6-1.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-mirror" viewBox="0 0 24 24"><path d="M12 1.5v21" stroke="currentColor" stroke-width="2.2" stroke-dasharray="3 2.4"/><g fill="currentColor"><path d="M2 6h7v4H5.5v3H2z"/><path d="M22 6h-7v4h3.5v3H22z" opacity=".55"/><rect x="2" y="16" width="7" height="6" rx="1.4"/><rect x="15" y="16" width="7" height="6" rx="1.4" opacity=".55"/></g></symbol>
+  <symbol id="ic-arrow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7m-3-3 3 3-3 3"/><path d="M21 18h-7m3-3-3 3 3 3"/><path d="M18 3v7m-3-3 3 3 3-3" opacity=".55"/></g><circle cx="6" cy="18" r="3.4" fill="currentColor"/></symbol>
+  <symbol id="sym-arrow" viewBox="0 0 10 10"><path d="M5 .4 9.5 5.2H6.7v4.4H3.3V5.2H.5z"/></symbol>
+  <symbol id="ic-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="currentColor"/><g fill="var(--night)"><circle cx="8.2" cy="8.2" r="1.8"/><circle cx="15.8" cy="8.2" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="8.2" cy="15.8" r="1.8"/><circle cx="15.8" cy="15.8" r="1.8"/></g></symbol>
+  <!-- 아이템 -->
+  <symbol id="ic-cards" viewBox="0 0 24 24"><rect x="2.5" y="5" width="12" height="16" rx="2.4" fill="currentColor" opacity=".55" transform="rotate(-10 8.5 13)"/><rect x="9" y="3" width="12" height="16" rx="2.4" fill="currentColor"/><path d="M15 7.5l1.2 2.6 2.8.3-2.1 1.9.6 2.8-2.5-1.5-2.5 1.5.6-2.8-2.1-1.9 2.8-.3z" fill="var(--night)"/></symbol>
+  <symbol id="ic-brush" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5C6.5 2.5 2.5 6.6 2.5 11.6c0 4.9 4 8.9 8.4 8.9 1.4 0 2.1-.9 2.1-1.9 0-1.3-1.1-1.6-1.1-2.8 0-1 .8-1.6 1.8-1.6h2.6c3.1 0 5.2-2.1 5.2-5C21.5 5.9 17.3 2.5 12 2.5z"/><g fill="var(--night)"><circle cx="7.3" cy="11" r="1.7"/><circle cx="10" cy="6.8" r="1.7"/><circle cx="15" cy="6.8" r="1.7"/><circle cx="18" cy="10.6" r="1.5"/></g></symbol>
+  <symbol id="ic-note" viewBox="0 0 24 24"><path fill="currentColor" d="M9 4.5 20 2.5v13.2a3.2 3.2 0 1 1-2-3V7.1l-7 1.3v9.3a3.2 3.2 0 1 1-2-3z"/></symbol>
+  <symbol id="ic-bell" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5a1.6 1.6 0 0 1 1.6 1.6v.6a6 6 0 0 1 4.4 5.8v4.3l2 2.6v1.1H4v-1.1l2-2.6v-4.3a6 6 0 0 1 4.4-5.8v-.6A1.6 1.6 0 0 1 12 2.5zM9.6 19.6h4.8a2.4 2.4 0 0 1-4.8 0z"/><path d="M20.5 6.5c.8 1.1 1.2 2.4 1.2 3.8M3.5 6.5a6.6 6.6 0 0 0-1.2 3.8" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="ic-ticket" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A1.5 1.5 0 0 1 4.5 5h15A1.5 1.5 0 0 1 21 6.5V9a3 3 0 0 0 0 6v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5V15a3 3 0 0 0 0-6z"/><path d="M15 6.5v11" stroke="var(--night)" stroke-width="1.6" stroke-dasharray="2 2"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-8.5-5.2-8.5-11.2A4.8 4.8 0 0 1 12 6.6a4.8 4.8 0 0 1 8.5 3.2C20.5 15.8 12 21 12 21z"/></symbol>
+  <symbol id="ic-hint" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5a7 7 0 0 0-4.2 12.6c.7.5 1.2 1.3 1.2 2.2V18h6v-.7c0-.9.5-1.7 1.2-2.2A7 7 0 0 0 12 2.5z"/><rect x="9" y="19.2" width="6" height="2.3" rx="1.1" fill="currentColor"/></symbol>
+  <symbol id="ic-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="currentColor"/><circle cx="12" cy="12" r="6" fill="none" stroke="var(--y-e)" stroke-width="2"/></symbol>
+  <symbol id="ic-shop" viewBox="0 0 24 24"><path fill="currentColor" d="M5 8h14l-1.2 11.2A2 2 0 0 1 15.8 21H8.2a2 2 0 0 1-2-1.8z"/><path d="M8.5 9V7a3.5 3.5 0 0 1 7 0v2" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+  <symbol id="ic-trophy" viewBox="0 0 24 24"><path fill="currentColor" d="M7 3h10v5a5 5 0 0 1-10 0zM10.5 13h3v4h-3zM7.5 18h9v3h-9z"/><path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4.5A1.5 1.5 0 0 1 5.5 3H11v17H5.5A1.5 1.5 0 0 1 4 18.5zM13 3h5.5A1.5 1.5 0 0 1 20 4.5v14a1.5 1.5 0 0 1-1.5 1.5H13z"/></symbol>
+  <symbol id="ic-gear" viewBox="0 0 24 24"><path fill="currentColor" d="M10.3 2h3.4l.5 2.7 1.9.8 2.3-1.6 2.4 2.4-1.6 2.3.8 1.9 2.7.5v3.4l-2.7.5-.8 1.9 1.6 2.3-2.4 2.4-2.3-1.6-1.9.8-.5 2.7h-3.4l-.5-2.7-1.9-.8-2.3 1.6-2.4-2.4 1.6-2.3-.8-1.9L2 13.7v-3.4l2.7-.5.8-1.9-1.6-2.3 2.4-2.4 2.3 1.6 1.9-.8zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></symbol>
+  <symbol id="ic-boost" viewBox="0 0 24 24"><path fill="currentColor" d="M13.6 1.8 4.5 13.4h6l-1.6 8.8 9.6-12.1h-6.1z"/></symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2.5" fill="currentColor"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+</svg>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<main id="app">
+  <!-- 처음 화면 -->
+  <section id="scr-title" class="screen title">
+    <div class="topbar">
+      <button class="profile" id="profile" data-act="look" aria-label="꾸미기 열기"></button>
+      <button class="wallet" data-act="shop" aria-label="상점 열기">
+        <span class="wpill tk"><svg><use href="#ic-ticket"/></svg><b data-w="tickets">5</b><small data-w="regen"></small><svg class="bolt" aria-label="티켓 부스터 사용 중"><use href="#ic-boost"/></svg></span>
+        <span class="wpill ht"><svg><use href="#ic-hint"/></svg><b data-w="hints">3</b></span>
+        <span class="wpill cn"><svg><use href="#ic-coin"/></svg><b data-w="coins">0</b></span>
+      </button>
+    </div>
+    <div class="title-main">
+      <div class="hero" aria-hidden="true">
+        <div class="hero-board">
+          <i class="c-b"></i><i class="c-g"></i><i class="c-r"></i>
+          <i class="c-r"></i><i class="c-y glow"></i><i class="c-b"></i>
+          <i class="c-g"></i><i class="c-b"></i><i class="c-g"></i>
+        </div>
+        <svg class="lens" viewBox="0 0 100 100"><circle cx="40" cy="40" r="27" class="lens-glass"/><circle cx="40" cy="40" r="27" class="lens-rim"/><path d="M60 60 84 84" class="lens-handle"/><path d="M28 30a15 15 0 0 1 10-8" class="lens-shine"/></svg>
+        <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+      </div>
+      <h1 class="logo" aria-label="한칸 찾기">
+        <span class="ltile c-g" style="--k:0">한</span><span class="ltile c-y on" style="--k:1">칸</span><span class="ltile c-b" style="--k:2">찾</span><span class="ltile c-r" style="--k:3">기</span>
+      </h1>
+      <nav class="menu">
+        <button class="btn primary big mode" id="btn-stage" data-act="stage"><span>단계 도전</span><small id="stage-sub">단계 1</small></button>
+        <div class="row">
+          <button class="btn mode" id="btn-time" data-act="time"><span>타임어택</span><small id="time-sub">90초 기록 겨루기</small></button>
+          <button class="btn mode" id="btn-practice" data-act="practice"><span>규칙 연습</span><small id="practice-sub">고른 규칙만</small></button>
+        </div>
+        <div class="row">
+          <button class="btn mode hard ex" id="btn-expert" data-act="expert"><span>익스퍼트</span><small id="expert-sub">두 규칙 섞기</small></button>
+          <button class="btn mode hard ms" id="btn-master" data-act="master"><span>마스터</span><small id="master-sub">세 규칙 섞기</small></button>
+        </div>
+        <div class="iconrow">
+          <button class="ibtn" id="btn-col" data-act="col"><svg><use href="#ic-cards"/></svg><span>수집</span><em class="nbadge" id="col-badge" hidden>0</em></button>
+          <button class="ibtn" id="btn-look" data-act="look"><svg><use href="#ic-brush"/></svg><span>꾸미기</span></button>
+          <button class="ibtn" id="btn-shop" data-act="shop"><svg><use href="#ic-shop"/></svg><span>상점</span></button>
+          <button class="ibtn" id="btn-hall" data-act="hall"><svg><use href="#ic-trophy"/></svg><span>명예의 전당</span></button>
+          <button class="ibtn" id="btn-book" data-act="book"><svg><use href="#ic-book"/></svg><span>규칙 도감</span></button>
+          <button class="ibtn" id="btn-settings" data-act="settings"><svg><use href="#ic-gear"/></svg><span>설정</span></button>
+        </div>
+      </nav>
+    </div>
+    <footer class="corner-note">스튜디오 한칸</footer>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="scr-play" class="screen play" hidden>
+    <header class="hud">
+      <div class="score-tile" id="score-tile"><span class="lbl" id="hud-lbl">찾은 칸</span><b id="score">0</b></div>
+      <span id="combo" class="combo"></span>
+      <div class="hearts" id="hearts" aria-label="남은 하트"></div>
+      <div class="time" id="hud-time"><b id="time">90</b><span class="lbl">초</span></div>
+      <span class="wpill tk" id="hud-tk"><svg><use href="#ic-ticket"/></svg><b data-w="tickets">5</b></span>
+      <button class="icon-btn" id="btn-pause" data-act="pause" aria-label="잠깐 멈춤">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg>
+      </button>
+    </header>
+    <div class="bar" id="bar-wrap"><i id="bar"></i></div>
+    <div class="clue" id="clue">
+      <button class="rule-ic" id="rule-ic" aria-label="규칙 보기 (꾹 누르기)"><svg><use id="rule-ic-use" href="#ic-path"/></svg></button>
+      <div class="clue-body">
+        <p class="clue-title" id="clue-title"></p>
+        <p class="clue-steps" id="clue-steps"></p>
+      </div>
+    </div>
+    <div class="stage">
+      <div id="tray" class="tray"></div>
+      <div id="count" class="count" hidden>3</div>
+      <div id="banner" class="banner" hidden></div>
+    </div>
+    <div class="marks mc-r" id="marks" role="toolbar" aria-label="칸 표시 도구">
+      <button class="mk-t txt" data-act="tool" data-id="pick" aria-pressed="true">고르기</button>
+      <span class="mk-grp">
+        <button class="mk-t sym" data-act="tool" data-id="o" aria-pressed="false" aria-label="동그라미 표시"><i class="mi-o"></i></button>
+        <button class="mk-t sym" data-act="tool" data-id="x" aria-pressed="false" aria-label="엑스 표시"><i class="mi-x"></i></button>
+      </span>
+      <span class="mk-cols" id="mk-cols">
+        <button class="mk-t col" data-act="tool" data-id="r" aria-pressed="true" aria-label="빨강으로 표시"><i class="mi-c c-r"><svg class="ms" aria-hidden="true"><use href="#sym-r"/></svg></i></button>
+        <button class="mk-t col" data-act="tool" data-id="b" aria-pressed="false" aria-label="파랑으로 표시"><i class="mi-c c-b"><svg class="ms" aria-hidden="true"><use href="#sym-b"/></svg></i></button>
+        <button class="mk-t col" data-act="tool" data-id="g" aria-pressed="false" aria-label="초록으로 표시"><i class="mi-c c-g"><svg class="ms" aria-hidden="true"><use href="#sym-g"/></svg></i></button>
+        <button class="mk-t col" data-act="tool" data-id="y" aria-pressed="false" aria-label="노랑으로 표시"><i class="mi-c c-y"><svg class="ms" aria-hidden="true"><use href="#sym-y"/></svg></i></button>
+      </span>
+      <button class="mk-t" data-act="marks-clear" aria-label="표시 모두 지우기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="playbar">
+      <button class="btn primary confirm-btn" id="btn-confirm" data-act="confirm" hidden>확정 <em>0</em></button>
+      <button class="hint-btn" id="btn-hint" data-act="hint">
+        <svg><use href="#ic-hint"/></svg><span class="hb-text"><b>힌트</b><em id="hint-next">약한 힌트</em></span><span class="hb-n" data-w="hints">3</span>
+      </button>
+    </div>
+    <div id="pause" class="overlay" hidden>
+      <div class="sheet">
+        <h2>잠깐 멈춤</h2>
+        <p class="sub" id="pause-note"></p>
+        <button class="btn primary" id="btn-resume" data-act="resume">계속하기</button>
+        <button class="btn" id="btn-leave" data-act="leave">저장하고 나가기</button>
+        <button class="btn ghost" id="btn-end" data-act="end-now" hidden>여기서 끝내고 기록하기</button>
+      </div>
+    </div>
+    <div id="psheet" class="overlay" hidden><div class="sheet" id="psheet-box"></div></div>
+  </section>
+
+  <!-- 타임어택 결과 -->
+  <section id="scr-result" class="screen result" hidden>
+    <p class="eyebrow" id="res-head">시간 끝!</p>
+    <div class="res-box">
+      <span id="res-best" class="badge" hidden>새 최고 기록</span>
+      <span class="lbl">찾은 칸</span>
+      <b id="res-score">0</b>
+      <span id="res-combo" class="sub"></span>
+    </div>
+    <p id="res-rank" class="sub"></p>
+    <p id="res-coin" class="gain"></p>
+    <div class="menu">
+      <button class="btn go" id="btn-cont" data-act="continue">광고 보고 15초 더 하기</button>
+      <button class="btn primary" id="btn-again" data-act="again">다시 하기 <small class="cost"><svg><use href="#ic-ticket"/></svg>1</small></button>
+      <button class="btn ghost" id="btn-home" data-act="home-result">처음으로</button>
+    </div>
+  </section>
+
+  <!-- 명예의 전당 -->
+  <section id="scr-hall" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>명예의 전당</h2>
+    </header>
+    <div class="scroll">
+      <button class="btn go" id="btn-board" data-act="board" hidden>순위표 보기</button>
+      <div class="stat-row"><span>단계 도전 (모든 규칙 합)</span><b id="hall-stage">-</b></div>
+      <ul class="hall-rules" id="hall-rules"></ul>
+      <h3 class="sec">타임어택</h3>
+      <ol id="hall-list" class="hall"></ol>
+      <p id="hall-empty" class="sub empty">아직 기록이 없어요. 한 판 해 보세요!</p>
+    </div>
+  </section>
+
+  <!-- 규칙 도감 -->
+  <section id="scr-book" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>규칙 도감</h2>
+    </header>
+    <div class="scroll">
+      <ul class="rules" id="book-rules"></ul>
+      <h3 class="sec">놀이 방법</h3>
+      <ul class="notes">
+        <li><b>단계 도전</b> · 규칙을 골라 그 규칙의 단계를 하나씩 깨요. 규칙마다 따로 끝없이 오르고, 10단계를 깨면 다음 규칙이 열려요.</li>
+        <li><b>메달</b> · 단계를 깰 때마다 그 규칙 메달에 경험치가 쌓여 7단계로 자라요(새싹·동·은·금·무지개·빛·전설).</li>
+        <li><b>테두리 보상</b> · 아무 규칙이나 10·20·30·40단계를 깨면 동·은·금·무지개 프로필 테두리를 받아요.</li>
+        <li><b>타임어택</b> · 90초 동안 많이 찾기. 맞히면 3초 늘고 틀리면 5초 줄어요. 시작할 때 나올 규칙을 골라요.</li>
+        <li><b>규칙 연습</b> · 배운 규칙 가운데 1~2개만 골라 계속 풀어요.</li>
+        <li><b>익스퍼트</b> · 단계 도전 10단계를 깨면 열려요. 열린 규칙 두 개를 한 판에 섞어, 두 규칙을 모두 지키는 칸을 찾아요. 랜덤 조합도 있어요.</li>
+        <li><b>마스터</b> · 단계 도전 20단계를 깨고, 섞을 수 있는 규칙이 열리면 열려요. 열린 규칙 세 개를 한 판에 섞어, 세 규칙을 모두 지키는 한 칸을 찾아요. 규칙 3개를 직접 고르거나 랜덤으로 해요.</li>
+        <li><b>하트</b> · 단계 도전·규칙 연습은 한 판에 하트 3개. 틀리면 하나씩 줄어요.</li>
+        <li><b>티켓</b> · 타임어택은 시작할 때 1장 써요. 단계 도전·규칙 연습은 한 판에서 하트를 2개 잃으면 1장 써요. 30분마다 1장씩 5장까지 차요. 상점의 일일 티켓 부스터를 쓰면 24시간 동안 티켓을 쓰지 않아요.</li>
+        <li><b>이어하기</b> · 하다가 나가도 그 판은 저장돼요. 다시 들어오면 티켓 없이 이어서 해요.</li>
+        <li><b>카드팩</b> · 단계 도전 5단계마다 1개. 윗부분을 그어 뜯으면 카드·가구·퍼즐 칸이 나와요. 다 붙이면 꾸미기 아이템이 열려요.</li>
+        <li><b>등급</b> · 같은 칸 친구·가구가 또 나오면 쌓여요. 1개 → 3개 → 5개를 모으면 수집 → 등급 올리기에서 한 단계씩 올려요(가구: 낡은·일반·고급·반짝). 최고 등급에서 또 나오면 조각이 되고, 조각 10개는 카드팩 1개로 바꿔요.</li>
+        <li><b>한칸 방</b> · 수집 화면 맨 위. 모은 가구를 끌어다 방 칸에 놓고 벽지·바닥을 골라요. 모은 칸 친구들이 방을 돌아다니고, 누르면 콩 뛰어요.</li>
+        <li><b>칸 표시</b> · 판 아래에서 색을 고르고 ○ 나 ✕ 를 누른 뒤 칸을 누르면 그 색으로 작게 표시돼요. 한 칸에 색·모양을 여러 개 찍을 수 있고, 같은 표시를 다시 누르면 지워져요. 정답 판정과는 상관없고, '고르기'를 눌러야 정답을 고를 수 있어요.</li>
+        <li><b>색약 모드</b> · 설정에서 켜면 색마다 모양(● 초록 · ▲ 빨강 · ■ 파랑 · ◆ 노랑)이 크게 나오고, 구분이 쉬운 색으로 바뀌어요. 칸 표시·바깥 숫자에도 모양이 붙어요.</li>
+        <li><b>힌트</b> · 한 번 쓰면 약한 힌트, 두 번째는 강한 힌트, 세 번째는 정답 칸을 보여 줘요.</li>
+        <li><b>규칙 다시 보기</b> · 단서 왼쪽 아이콘을 꾹 누르고 있으면 규칙이 보여요. 위 목록의 '따라 해 보기'로 예시 판을 다시 풀어 볼 수 있어요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 규칙 연습 고르기 -->
+  <section id="scr-practice" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>규칙 연습</h2>
+    </header>
+    <div class="scroll">
+      <button class="btn go" id="btn-practice-resume" data-act="practice-resume" hidden>이어서 하기</button>
+      <p class="lead">연습할 규칙을 1개나 2개 골라요.</p>
+      <div class="pick" id="pick-rules"></div>
+      <p class="sub small" id="pick-note"></p>
+      <div id="tut-sec">
+        <h3 class="sec">튜토리얼 다시 보기</h3>
+        <div class="tlist" id="tut-list"></div>
+      </div>
+    </div>
+    <button class="btn primary" id="btn-practice-go" data-act="practice-go">연습 시작</button>
+  </section>
+
+  <!-- 단계 도전: 규칙 고르기 -->
+  <section id="scr-rules" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>단계 도전</h2>
+    </header>
+    <div class="scroll">
+      <div class="rcards" id="rule-cards"></div>
+      <p class="sub small" id="rules-note"></p>
+    </div>
+  </section>
+
+  <!-- 익스퍼트 · 마스터 고르기 -->
+  <section id="scr-hard" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 id="hard-title">익스퍼트</h2>
+    </header>
+    <div class="scroll">
+      <p class="lead" id="hard-lead"></p>
+      <button class="btn go" id="btn-hard-resume" data-act="hard-resume" hidden>이어서 하기</button>
+      <div class="hpick" id="hard-pick"></div>
+      <p class="sub small" id="hard-note"></p>
+    </div>
+    <button class="btn primary" id="btn-hard-go" data-act="hard-go">시작</button>
+  </section>
+
+  <!-- 상점 -->
+  <section id="scr-shop" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>상점</h2>
+    </header>
+    <div class="wallet static">
+      <span class="wpill tk"><svg><use href="#ic-ticket"/></svg><b data-w="tickets">5</b><small data-w="regen"></small><svg class="bolt" aria-label="티켓 부스터 사용 중"><use href="#ic-boost"/></svg></span>
+      <span class="wpill ht"><svg><use href="#ic-hint"/></svg><b data-w="hints">3</b></span>
+      <span class="wpill cn"><svg><use href="#ic-coin"/></svg><b data-w="coins">0</b></span>
+    </div>
+    <div class="scroll" id="shop-list"></div>
+  </section>
+
+  <!-- 수집: 카드팩 · 카드 도감 · 직소 퍼즐 -->
+  <section id="scr-col" class="screen page nb nbg" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>수집</h2>
+    </header>
+    <div class="scroll" id="col-body"></div>
+  </section>
+
+  <!-- 조합: 끌어다 제자리에 붙이기 -->
+  <section id="scr-board" class="screen page nb nbg" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="col-back" aria-label="수집으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2 id="board-title">조합</h2>
+    </header>
+    <div class="scroll" id="board-body"></div>
+  </section>
+
+  <!-- 한칸 방: 가구 놓기 · 칸 친구들 -->
+  <section id="scr-room" class="screen page nbg room-scr" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="col-back" aria-label="수집으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>한칸 방</h2>
+      <span class="rm-count" id="room-count"></span>
+    </header>
+    <div class="room-wrap" id="room-wrap"></div>
+    <div class="rm-panel" id="rm-panel">
+      <div class="rm-tabs" id="rm-tabs" role="tablist">
+        <button data-rtab="fu" aria-pressed="true">가구</button>
+        <button data-rtab="wall" aria-pressed="false">벽지</button>
+        <button data-rtab="floor" aria-pressed="false">바닥</button>
+      </div>
+      <div id="rm-list"></div>
+      <p class="rm-tip" id="rm-tip"></p>
+    </div>
+  </section>
+
+  <!-- 꾸미기 -->
+  <section id="scr-look" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>꾸미기</h2>
+    </header>
+    <div class="scroll" id="look-body"></div>
+  </section>
+
+  <!-- 설정 -->
+  <section id="scr-settings" class="screen page" hidden>
+    <header class="page-head">
+      <button class="icon-btn" data-act="home" aria-label="처음으로"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h2>설정</h2>
+    </header>
+    <div class="list">
+      <button class="setrow" id="set-music" data-act="toggle-music" aria-pressed="true"><span>배경음</span><i class="tg"></i></button>
+      <button class="setrow" id="set-sound" data-act="toggle-sound" aria-pressed="true"><span>효과음</span><i class="tg"></i></button>
+      <button class="setrow" id="set-vibe" data-act="toggle-vibe" aria-pressed="true"><span>진동</span><i class="tg"></i></button>
+      <button class="setrow" id="set-cb" data-act="toggle-cb" aria-pressed="false"><span class="st2">색약 모드<small>색마다 모양(● ▲ ■ ◆)을 크게 보여 주고, 구분이 쉬운 색으로 바꿔요</small></span><i class="tg"></i></button>
+      <button class="setrow danger" id="set-reset" data-act="reset"><span>기록 지우기</span><em id="reset-hint"></em></button>
+    </div>
+    <p class="sub small">스튜디오 한칸 · 버전 1.0.0<br><a class="lnk" data-ext href="https://kankanii.github.io/hankan-find/privacy.html">개인정보처리방침</a></p>
+  </section>
+</main>
+
+<div id="modal" class="modal" hidden><div class="sheet wide" id="modal-box"></div></div>
+<div id="peek" class="modal peek" hidden aria-live="polite"><div class="sheet wide" id="peek-box"></div></div>
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+<div id="wipe" aria-hidden="true" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<!-- 시작 로고 (제작사) -->
+<div id="splash" class="splash" role="img" aria-label="STUDIO HANKAN">
+  <div class="sp-in">
+    <svg class="sp-logo" viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="6" y="6" width="23" height="23" rx="6" class="sp-cell"/>
+      <rect x="35" y="6" width="23" height="23" rx="6" class="sp-cell"/>
+      <rect x="6" y="35" width="23" height="23" rx="6" class="sp-cell"/>
+      <rect x="35" y="35" width="23" height="23" rx="6" class="sp-one"/>
+    </svg>
+    <p class="sp-name">STUDIO HANKAN</p>
+  </div>
+</div>
+
+<script src="js/platform.js"></script>
+<script src="js/puzzles.js"></script>
+<script src="js/puzzles-multi.js"></script>
+<script src="js/puzzles-combo.js"></script>
+<script src="js/puzzles-master.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/medals.js"></script>
+<script src="js/pixel.js"></script>
+<script src="js/room.js"></script>
+<script src="js/collect.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

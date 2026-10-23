@@ -1,0 +1,4 @@
+/* 한칸 찾기 · 글꼴 (SIL Open Font License, fonts/OFL-*.txt) — 게임에 나오는 글자 + 완성형 한글 2350자만 */
+@font-face { font-family: "Black Han Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url(../fonts/black-han-sans.woff2) format("woff2"); }
+@font-face { font-family: "IBM Plex Sans KR"; font-weight: 400; font-style: normal; font-display: swap; src: url(../fonts/plex-kr-400.woff2) format("woff2"); }
+@font-face { font-family: "IBM Plex Sans KR"; font-weight: 600; font-style: normal; font-display: swap; src: url(../fonts/plex-kr-600.woff2) format("woff2"); }
