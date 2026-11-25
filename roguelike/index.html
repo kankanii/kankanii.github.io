@@ -1789,9 +1789,20 @@ function render() {
   bg.addColorStop(0, '#0a0a0e'); bg.addColorStop(1, '#141319');
   ctx.fillStyle = bg; ctx.fillRect(0, 0, vw, vh);
 
-  // 바닥
+  // 바닥 — 아레나 밖(세로 화면에서 보이는 영역)은 같은 타일을 어둡게 이어 깖
+  const floorX = scrX(-ARENA), floorY = scrY(0, -ARENA);
+  const sx = CAM.zoom, sy = CAM.yScale * CAM.zoom;
+  if (!ST.floorPat) ST.floorPat = ctx.createPattern(ST.floor, 'repeat');
+  if (ST.floorPat) {
+    ctx.save();
+    ctx.translate(floorX, floorY); ctx.scale(sx, sy);
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = ST.floorPat;
+    ctx.fillRect(-floorX / sx, -floorY / sy, vw / sx, vh / sy);
+    ctx.restore();
+  }
   ctx.save();
-  ctx.drawImage(ST.floor, scrX(-ARENA), scrY(0, -ARENA), ARENA * 2 * CAM.zoom, ARENA * 2 * CAM.yScale * CAM.zoom);
+  ctx.drawImage(ST.floor, floorX, floorY, ARENA * 2 * sx, ARENA * 2 * sy);
   ctx.restore();
 
   // 바닥 얼룩
